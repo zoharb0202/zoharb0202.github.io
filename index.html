@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zohar Buzaglo</title>
+<meta name="description" content="Zohar Buzaglo, software developer. Games and the systems under them, in C++, C# and Java.">
+<meta property="og:title" content="Zohar Buzaglo">
+<meta property="og:description" content="Games and the systems under them, in C++, C# and Java.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23D9480F'/><text x='16' y='23' font-family='monospace' font-size='20' font-weight='700' text-anchor='middle' fill='white'>Z</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#ECEEF0; --surface:#F8F9FA; --ink:#12161B; --muted:#5B636D; --line:#D3D8DD;
+  --accent:#D9480F; --accent-ink:#FFFFFF; --olive:#56663A; --screen:#161A1F; --screen-ink:#C9D1D9; --screen-dim:#5E6873;
+  --p1:#4DA3FF; --p2:#FF8A4C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101317; --surface:#171B20; --ink:#E6E9EC; --muted:#98A1AB; --line:#2A3038;
+    --accent:#FF7A3D; --accent-ink:#101317; --olive:#9DB26C; --screen:#0A0C0F; --screen-ink:#C9D1D9; --screen-dim:#4F5863;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101317; --surface:#171B20; --ink:#E6E9EC; --muted:#98A1AB; --line:#2A3038;
+  --accent:#FF7A3D; --accent-ink:#101317; --olive:#9DB26C; --screen:#0A0C0F; --screen-ink:#C9D1D9; --screen-dim:#4F5863;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.6;padding-inline:20px}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:1120px;margin-inline:auto}
+.mono{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
+.label{font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{font-family:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;font-weight:800;line-height:.95;margin:0;text-wrap:balance;letter-spacing:.005em}
+p{margin:0}
+
+/* top bar */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:22px;border-bottom:1px solid var(--line)}
+.bar nav{display:flex;gap:20px;flex-wrap:wrap}
+.bar a{text-decoration:none;font-size:.92rem;color:var(--muted)}
+.bar a:hover{color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:48px;align-items:center;padding-block:64px 72px}
+.hero > div:first-child{container-type:inline-size;min-width:0}
+.hero h1{font-size:clamp(3rem,19cqi,7.2rem);text-transform:uppercase}
+.hero h1 span{display:block;color:var(--accent)}
+.hero .lede{font-size:1.2rem;max-width:36ch;margin-top:22px}
+.hero .meta{margin-top:18px;color:var(--muted);font-size:.98rem;max-width:44ch}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:.95rem;padding:10px 16px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+
+/* the console screens */
+.screen{background:var(--screen);color:var(--screen-ink);border-radius:10px;padding:14px 16px 12px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px -24px rgba(0,0,0,.55);max-width:100%;overflow:hidden}
+.screen-head{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--screen-dim);margin-bottom:8px;letter-spacing:.04em}
+.dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:#2F363E;display:block}
+pre.arena{margin:0;font-family:"JetBrains Mono",monospace;font-size:clamp(7px,1.05vw,12.5px);line-height:1.18;white-space:pre;overflow:hidden}
+.arena .w{color:#8B96A3}.arena .d{color:#9C7B52}.arena .m{color:#E5484D}.arena .b{color:#3A424B}
+.arena .t1{color:var(--p1);font-weight:500}.arena .t2{color:var(--p2);font-weight:500}.arena .s{color:#F5D90A}
+.hud{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:.72rem;margin-top:8px;color:var(--screen-dim)}
+.hud b{font-weight:500}.hud .p1{color:var(--p1)}.hud .p2{color:var(--p2)}
+
+/* projects */
+section{padding-block:72px;border-top:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:40px}
+.sec-head h2{font-size:clamp(2.4rem,5vw,3.6rem);text-transform:uppercase}
+.project{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.project + .project{margin-top:88px}
+.project h3{font-size:clamp(2rem,4vw,2.9rem);text-transform:uppercase}
+.project .tag{margin-top:10px;color:var(--muted)}
+.project .desc{margin-top:18px;max-width:58ch}
+.points{list-style:none;padding:0;margin:22px 0 0;display:flex;flex-direction:column;gap:12px}
+.points li{display:grid;grid-template-columns:18px 1fr;gap:10px;max-width:60ch}
+.points li::before{content:"";width:8px;height:8px;margin-top:.55em;background:var(--accent);transform:rotate(45deg)}
+.stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:22px}
+.stack span{font-family:"JetBrains Mono",monospace;font-size:.76rem;padding:3px 9px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:var(--surface)}
+.project .links{margin-top:24px}
+.credit{margin-top:14px;font-size:.9rem;color:var(--muted)}
+
+/* misere board */
+.ttt{display:flex;flex-direction:column;gap:14px}
+.ttt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:min(100%,340px);margin-inline:auto}
+.ttt-grid button{aspect-ratio:1;max-width:100%;border:0;border-radius:6px;background:#20262D;color:var(--screen-ink);font-family:"Big Shoulders Display",sans-serif;font-weight:800;font-size:clamp(1.6rem,5vw,2.4rem);cursor:pointer;transition:background .15s}
+.ttt-grid button:hover:not(:disabled){background:#2A3139}
+.ttt-grid button:disabled{cursor:default}
+.ttt-grid button.x{color:var(--p1)}.ttt-grid button.o{color:var(--p2)}
+.ttt-grid button.lose{background:#3A1D1F}
+.ttt-status{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--screen-dim);flex-wrap:wrap}
+.ttt-status strong{color:var(--screen-ink);font-weight:500}
+.ttt-status button{font:inherit;color:var(--screen-ink);background:transparent;border:1px solid #39414A;border-radius:4px;padding:4px 10px;cursor:pointer}
+.rule{font-size:.82rem;color:var(--screen-dim);font-family:"JetBrains Mono",monospace;text-align:center}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.skills div{background:var(--surface);padding:24px}
+.skills h3{font-size:1.6rem;text-transform:uppercase}
+.skills p{margin-top:10px;color:var(--muted);font-size:.96rem}
+
+/* contact */
+.contact{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:40px;align-items:end}
+.contact h2{font-size:clamp(2.6rem,6vw,4.4rem);text-transform:uppercase}
+.contact ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.contact li a{font-family:"JetBrains Mono",monospace;font-size:.95rem;text-decoration:none;border-bottom:1px solid var(--line)}
+.contact li a:hover{border-color:var(--accent)}
+footer{padding-block:28px 40px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:860px){
+  .hero,.project,.contact{grid-template-columns:1fr}
+  .hero{padding-block:40px 56px;gap:32px}
+  .skills{grid-template-columns:1fr}
+  .project .demo{order:2}
+}
+@media (max-width:480px){ .bar nav{gap:14px} body{font-size:16px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="bar">
+  <a href="#top" class="mono" style="color:var(--ink);font-weight:500">zohar.buzaglo</a>
+  <nav aria-label="Sections"><a href="#projects">Projects</a><a href="#skills">Skills</a><a href="#contact">Contact</a></nav>
+</header>
+
+<main id="top">
+<div class="hero">
+  <div>
+    <p class="label" id="headline">Software developer · CS student</p>
+    <h1 style="margin-top:14px">Zohar<span>Buzaglo</span></h1>
+    <p class="lede">I build games and the systems under them: simulations, AI opponents, and the tests that keep them honest.</p>
+    <p class="meta" id="edu">B.Sc. Computer Science at the Academic College of Tel Aviv-Yaffo (MTA), graduating 2027. Looking for a software developer position.</p>
+    <div class="links">
+      <a class="btn primary" href="#projects">See the projects</a>
+      <a class="btn" href="https://github.com/zoharb0202">GitHub</a>
+      <a class="btn" href="https://www.linkedin.com/in/zohar-buzaglo/">LinkedIn</a>
+    </div>
+  </div>
+  <figure class="screen" style="margin:0" aria-label="A live computer-versus-computer match of Tanks Game, rendered as text">
+    <div class="screen-head"><span class="dots"><i></i><i></i><i></i></span><span>tanksGame.exe · CPU vs CPU · live</span></div>
+    <pre class="arena" id="arena" aria-hidden="true"></pre>
+    <div class="hud"><span><b class="p1">P1</b> <span id="s1">0</span></span><span id="tick">tick 0</span><span><b class="p2">P2</b> <span id="s2">0</span></span></div>
+  </figure>
+</div>
+
+<section id="projects">
+  <div class="sec-head"><h2>Projects</h2><p class="label">Code, write-ups and runnable builds on GitHub</p></div>
+
+  <article class="project">
+    <div>
+      <p class="label">C++17 · Windows console</p>
+      <h3 style="margin-top:10px">Tanks Game</h3>
+      <p class="tag">A real-time tank battle with deterministic record and replay.</p>
+      <p class="desc">Players steer tanks one track at a time, aim 8-way cannons and fight across file-loaded maps with breakable walls, mines and wrap-around tunnels. The hero window above runs a simplified browser version of its computer-vs-computer mode.</p>
+      <ul class="points">
+        <li>Deterministic replay: the random seed and every tick's input are recorded, so any game can be reproduced exactly.</li>
+        <li>A headless test mode replays recorded games and diffs the outcome against expected results.</li>
+        <li>AI tanks scan eight firing lines through the tunnels and dodge incoming shells.</li>
+        <li>Player hierarchy with human and computer implementations behind one interface.</li>
+      </ul>
+      <div class="stack"><span>C++17</span><span>OOP</span><span>STL</span><span>Win32 console</span><span>Visual Studio</span></div>
+      <div class="links"><a class="btn" href="https://github.com/zoharb0202/tanks-game">View the code</a></div>
+      <p class="credit">Solo project.</p>
+    </div>
+    <div class="demo screen">
+      <div class="screen-head"><span class="dots"><i></i><i></i><i></i></span><span>tanks-game_02.result</span></div>
+      <pre class="arena mono" style="font-size:clamp(9px,1.25vw,13px)"><span class="b">1750337126</span>          <span class="b">&lt;- recorded seed</span>
+ <span class="b">48</span>  WALL HIT          X: 10, Y: 20
+ <span class="b">65</span>  WEAKEND WALL HIT  X: 10, Y: 20
+ <span class="b">87</span>  CANNON HIT        X: 10, Y: 12
+<span class="b">105</span>  MINE P1           X: 10, Y: 2
+<span class="b">199</span>  TANK HIT          X: 62, Y: 5
+<span class="b">238</span>  TANK HIT          X: 6, Y: 5
+SCORE P1=11 P2=3
+
+<span class="b">$</span> tanksGame_v2.exe -load -silent
+<span style="color:#46A758">Test PASSED for tanks-game_02</span></pre>
+      <p class="rule" style="margin-top:10px;text-align:left">Excerpt from a real recorded game's expected results (tick, event, position). Silent mode replays the recording and diffs every line.</p>
+    </div>
+  </article>
+
+  <article class="project">
+    <div>
+      <p class="label">C# · .NET · WinForms</p>
+      <h3 style="margin-top:10px">Tic-Tac-Toe Misère</h3>
+      <p class="tag">Reverse tic-tac-toe on boards up to 10×10: complete a line and you lose.</p>
+      <p class="desc">A Windows desktop game with a settings screen, multi-round scoring and a computer opponent. The board next to this text runs the same AI, ported to JavaScript, so you can play it here.</p>
+      <ul class="points">
+        <li>Game logic is a separate .NET library; the UI redraws through a board event (observer pattern).</li>
+        <li>The AI looks one move ahead: it avoids completing its own lines, hunts for moves that leave you only losing replies, and otherwise minimizes your safe options.</li>
+        <li>Win detection checks only the lines through the last move: O(N), not a full board scan.</li>
+        <li>xUnit test suite and GitHub Actions build on Windows for every push.</li>
+      </ul>
+      <div class="stack"><span>C#</span><span>.NET</span><span>WinForms</span><span>xUnit</span><span>GitHub Actions</span></div>
+      <div class="links"><a class="btn" href="https://github.com/zoharb0202/tictactoe-misere">View the code</a></div>
+      <p class="credit">Built with Jonathan Katsav.</p>
+    </div>
+    <div class="demo screen ttt">
+      <div class="screen-head"><span class="dots"><i></i><i></i><i></i></span><span>TicTacToeMisere · you (X) vs computer (O)</span></div>
+      <div class="ttt-grid" id="ttt" role="grid" aria-label="4 by 4 board"></div>
+      <div class="ttt-status"><span id="tttMsg" aria-live="polite"><strong>Your move.</strong> Don't complete a line.</span><span>You <strong id="tttYou">0</strong> · CPU <strong id="tttCpu">0</strong></span><button type="button" id="tttReset">New round</button></div>
+    </div>
+  </article>
+</section>
+
+<section id="skills">
+  <div class="sec-head"><h2>Toolbox</h2></div>
+  <div class="skills">
+    <div><h3>Languages</h3><p>C++17, C#, Java. Comfortable moving between them, and with the OOP, generics and STL/collections work each project needed.</p></div>
+    <div><h3>Engineering</h3><p>Separating logic from UI, event-driven design, deterministic simulation, unit testing (xUnit) and CI with GitHub Actions.</p></div>
+    <div><h3>Also</h3><p>Git and GitHub, Visual Studio, the .NET CLI, and Windows desktop and console development.</p></div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div><p class="label">Open to software developer roles</p><h2 style="margin-top:12px">Let's talk</h2></div>
+  <ul><li><a href="mailto:zoharb0202@gmail.com">zoharb0202@gmail.com</a></li><li><a href="https://www.linkedin.com/in/zohar-buzaglo/">linkedin.com/in/zohar-buzaglo</a></li><li><a href="https://github.com/zoharb0202">github.com/zoharb0202</a></li></ul>
+</section>
+</main>
+
+<footer><span>© 2026 Zohar Buzaglo</span><span class="mono">Hand-built · hosted on GitHub Pages</span></footer>
+</div>
+
+<script>
+/* ---------- Tanks arena: a small CPU-vs-CPU simulation in the spirit of the real game ---------- */
+(function(){
+  const W = 58, H = 17;
+  const pre = document.getElementById('arena'); if (!pre) return;
+  const DIRS = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]];
+  const CANNON = ['|','/','-','\\','|','/','-','\\'];
+  const MAP = [
+    "##########################  ##############################",
+    "#                                                        #",
+    "#     1               ####                         @     #",
+    "#                     #                                  #",
+    "#        ######       #          @        ######         #",
+    "#                                              #         #",
+    "        @         ########                   #          ",
+    "#                                                        #",
+    "#                         ####         @                 #",
+    "#                            #                           #",
+    "          ######             #        ########            ",
+    "#                                                        #",
+    "#     @                                     @            #",
+    "#              #####                                     #",
+    "#                  #        @           #####         2  #",
+    "#                                                        #",
+    "##########################  ##############################"
+  ];
+  let board, tanks, shells, tick, score = [0,0];
+  const wrap = (x,y) => [(x+W)%W, (y+H)%H];
+  const solid = c => c === '#' || c === '%';
+  function reset(){
+    board = MAP.map(r => r.padEnd(W,' ').split(''));
+    tanks = []; shells = []; tick = 0;
+    for (let y=0;y<H;y++) for (let x=0;x<W;x++){
+      const c = board[y][x];
+      if (c==='1'||c==='2'){ tanks.push({p:+c, x, y, d: c==='1'?3:7, cd:0, cannon:true, alive:true, turn:0}); board[y][x]=' '; }
+    }
+  }
+  function tankAt(x,y){ return tanks.find(t => t.alive && t.x===x && t.y===y); }
+  function cannonAt(x,y){ return tanks.find(t => { if(!t.alive||!t.cannon) return false; const [cx,cy]=wrap(t.x+DIRS[t.d][0], t.y+DIRS[t.d][1]); return cx===x&&cy===y; }); }
+  function lineOfSight(t){
+    for (let d=0; d<8; d++){
+      let [x,y] = wrap(t.x+DIRS[d][0], t.y+DIRS[d][1]);
+      for (let s=0; s<Math.max(W,H); s++){
+        if (solid(board[y][x])) break;
+        const e = tankAt(x,y) || cannonAt(x,y);
+        if (e && e.p !== t.p) return d;
+        [x,y] = wrap(x+DIRS[d][0], y+DIRS[d][1]);
+      }
+    }
+    return -1;
+  }
+  function threatened(t){
+    return shells.some(s => { let x=s.x,y=s.y; for(let i=0;i<8;i++){ [x,y]=wrap(x+s.dx,y+s.dy); if(solid(board[y][x])) return false; if(x===t.x&&y===t.y) return true; } return false; });
+  }
+  function step(){
+    tick++;
+    for (const t of tanks){
+      if (!t.alive) continue;
+      if (t.cd>0) t.cd--;
+      const aim = t.cannon ? lineOfSight(t) : -1;
+      if (aim >= 0){
+        t.d = aim;
+        if (t.cd===0){ const [sx,sy]=wrap(t.x+DIRS[t.d][0], t.y+DIRS[t.d][1]); shells.push({x:sx,y:sy,dx:DIRS[t.d][0],dy:DIRS[t.d][1],p:t.p,fresh:true}); t.cd=9; }
+        continue;
+      }
+      // roam: drive forward, rotate on walls or when a shell is coming
+      if (threatened(t) || Math.random()<0.04) t.d = (t.d + (Math.random()<0.5?1:7)) % 8;
+      const [nx,ny] = wrap(t.x+DIRS[t.d][0], t.y+DIRS[t.d][1]);
+      if (solid(board[ny][nx]) || tankAt(nx,ny)) { t.d = (t.d+ (Math.random()<0.5?2:6))%8; }
+      else if (tick%2===0) { t.x=nx; t.y=ny; if (board[ny][nx]==='@'){ t.alive=false; board[ny][nx]=' '; score[t.p===1?1:0]+=5; } }
+    }
+    const keep = [];
+    for (const s of shells){
+      if (!s.fresh) { [s.x,s.y] = wrap(s.x+s.dx, s.y+s.dy); }
+      s.fresh = false;
+      const c = board[s.y][s.x];
+      if (c==='#'){ board[s.y][s.x]='%'; score[s.p-1]+=1; continue; }
+      if (c==='%'){ board[s.y][s.x]=' '; score[s.p-1]+=2; continue; }
+      const hit = tankAt(s.x,s.y);
+      if (hit){ hit.alive=false; if(hit.p!==s.p) score[s.p-1]+=5; continue; }
+      const gun = cannonAt(s.x,s.y);
+      if (gun){ gun.cannon=false; if(gun.p!==s.p) score[s.p-1]+=2; continue; }
+      keep.push(s);
+    }
+    shells = keep;
+  }
+  const esc = c => c==='<'?'&lt;':c==='>'?'&gt;':c==='&'?'&amp;':c;
+  function render(){
+    const g = board.map(r => r.map(c => c==='#'?'<span class="w">#</span>':c==='%'?'<span class="d">%</span>':c==='@'?'<span class="m">@</span>':c===' '?' ':esc(c)));
+    for (const s of shells) g[s.y][s.x] = '<span class="s">*</span>';
+    for (const t of tanks){ if(!t.alive) continue; const cls='t'+t.p; g[t.y][t.x]='<span class="'+cls+'">O</span>'; if(t.cannon){ const [cx,cy]=wrap(t.x+DIRS[t.d][0], t.y+DIRS[t.d][1]); if(!solid(board[cy][cx])) g[cy][cx]='<span class="'+cls+'">'+esc(CANNON[t.d])+'</span>'; } }
+    pre.innerHTML = g.map(r => r.join('')).join('\n');
+    document.getElementById('s1').textContent = score[0];
+    document.getElementById('s2').textContent = score[1];
+    document.getElementById('tick').textContent = 'tick ' + String(tick).padStart(4,'0');
+  }
+  reset();
+  // show a mid-game frame immediately
+  for (let i=0;i<40;i++) step();
+  render();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce){
+    setInterval(() => {
+      step();
+      const alive = [1,2].map(p => tanks.some(t => t.p===p && t.alive));
+      if (!alive[0] || !alive[1] || tick > 1400 || tanks.every(t => !t.cannon)) { reset(); }
+      render();
+    }, 110);
+  }
+})();
+
+/* ---------- Tic-Tac-Toe Misère: the project's AI, ported from C# ---------- */
+(function(){
+  const N = 4, EMPTY = 0, X = 1, O = 2;
+  const grid = document.getElementById('ttt'); if (!grid) return;
+  const msg = document.getElementById('tttMsg');
+  let cells, over, score = {you:0, cpu:0};
+  const buttons = [];
+  for (let r=0;r<N;r++) for (let c=0;c<N;c++){
+    const b = document.createElement('button');
+    b.type = 'button'; b.id = 'ttt-'+r+'-'+c; b.setAttribute('aria-label','Row '+(r+1)+', column '+(c+1));
+    b.addEventListener('click', () => play(r,c));
+    grid.appendChild(b); buttons.push(b);
+  }
+  function lineThrough(r,c,s){
+    const lines = [];
+    const check = (sr,sc,dr,dc) => { const cellsIn=[]; for(let i=0;i<N;i++){ const rr=sr+dr*i, cc=sc+dc*i; if(cells[rr][cc]!==s) return null; cellsIn.push([rr,cc]); } return cellsIn; };
+    lines.push(check(r,0,0,1), check(0,c,1,0));
+    if (r===c) lines.push(check(0,0,1,1));
+    if (r+c===N-1) lines.push(check(0,N-1,1,-1));
+    return lines.find(Boolean) || null;
+  }
+  const empties = () => { const e=[]; for(let r=0;r<N;r++) for(let c=0;c<N;c++) if(cells[r][c]===EMPTY) e.push([r,c]); return e; };
+  const loses = (r,c,s) => { cells[r][c]=s; const l=lineThrough(r,c,s); cells[r][c]=EMPTY; return !!l; };
+  function opponentSafeMoves(r,c,me,opp){
+    cells[r][c]=me; let n=0; for(const [rr,cc] of empties()) if(!loses(rr,cc,opp)) n++; cells[r][c]=EMPTY; return n;
+  }
+  function forcesLoss(r,c,me,opp){
+    cells[r][c]=me; const opts=empties(); let forced = opts.length>0; for(const [rr,cc] of opts) if(!loses(rr,cc,opp)){ forced=false; break; } cells[r][c]=EMPTY; return forced;
+  }
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  function chooseMove(me,opp){
+    const safe=[], good=[], losing=[];
+    for (const m of empties()){
+      if (loses(m[0],m[1],me)) losing.push(m);
+      else if (forcesLoss(m[0],m[1],me,opp)) good.push(m);
+      else safe.push(m);
+    }
+    if (good.length) return pick(good);
+    if (safe.length){
+      let best=[], bestN=Infinity;
+      for (const m of safe){ const n=opponentSafeMoves(m[0],m[1],me,opp); if(n<bestN){best=[m];bestN=n;} else if(n===bestN) best.push(m); }
+      return pick(best);
+    }
+    return pick(losing);
+  }
+  function draw(){
+    for (let r=0;r<N;r++) for (let c=0;c<N;c++){
+      const b = buttons[r*N+c], v = cells[r][c];
+      b.textContent = v===X?'X':v===O?'O':'';
+      b.className = v===X?'x':v===O?'o':'';
+      b.disabled = over || v!==EMPTY;
+    }
+    document.getElementById('tttYou').textContent = score.you;
+    document.getElementById('tttCpu').textContent = score.cpu;
+  }
+  function finish(line, loser){
+    over = true;
+    if (line) line.forEach(([r,c]) => buttons[r*N+c].classList.add('lose'));
+    if (loser===X){ score.cpu++; msg.innerHTML='<strong>You completed a line.</strong> Computer wins.'; }
+    else if (loser===O){ score.you++; msg.innerHTML='<strong>The computer had no safe move.</strong> You win!'; }
+    else msg.innerHTML='<strong>Board full.</strong> A tie.';
+  }
+  function place(r,c,s){
+    cells[r][c]=s;
+    const line = lineThrough(r,c,s);
+    if (line){ draw(); finish(line,s); return true; }
+    if (!empties().length){ draw(); finish(null,null); return true; }
+    return false;
+  }
+  function play(r,c){
+    if (over || cells[r][c]!==EMPTY) return;
+    if (place(r,c,X)) return;
+    const [mr,mc] = chooseMove(O,X);
+    if (place(mr,mc,O)) return;
+    msg.innerHTML = '<strong>Your move.</strong> Don\'t complete a line.';
+    draw();
+  }
+  function newRound(){
+    cells = Array.from({length:N}, () => Array(N).fill(EMPTY)); over = false;
+    msg.innerHTML = '<strong>Your move.</strong> Don\'t complete a line.';
+    draw();
+  }
+  document.getElementById('tttReset').addEventListener('click', newRound);
+  newRound();
+})();
+</script>
+</body>
+</html>
