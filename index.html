@@ -240,11 +240,11 @@ SCORE P1=11 P2=3
     "#     1               ####                         @     #",
     "#                     #                                  #",
     "#        ######       #          @        ######         #",
-    "#                                              #         #",
+    "#                                              #    2    #",
     "        @         ########                   #          ",
     "#                                                        #",
     "#                         ####         @                 #",
-    "#                            #                           #",
+    "#    1                       #                           #",
     "          ######             #        ########            ",
     "#                                                        #",
     "#     @                                     @            #",
@@ -289,7 +289,7 @@ SCORE P1=11 P2=3
       const aim = t.cannon ? lineOfSight(t) : -1;
       if (aim >= 0){
         t.d = aim;
-        if (t.cd===0){ const [sx,sy]=wrap(t.x+DIRS[t.d][0], t.y+DIRS[t.d][1]); shells.push({x:sx,y:sy,dx:DIRS[t.d][0],dy:DIRS[t.d][1],p:t.p,fresh:true}); t.cd=9; }
+        if (t.cd===0){ const [sx,sy]=wrap(t.x+DIRS[t.d][0], t.y+DIRS[t.d][1]); shells.push({x:sx,y:sy,dx:DIRS[t.d][0],dy:DIRS[t.d][1],p:t.p,fresh:true}); t.cd=14; }
         continue;
       }
       // roam: drive forward, rotate on walls or when a shell is coming
@@ -300,8 +300,8 @@ SCORE P1=11 P2=3
     }
     const keep = [];
     for (const s of shells){
-      if (!s.fresh) { [s.x,s.y] = wrap(s.x+s.dx, s.y+s.dy); }
-      s.fresh = false;
+      if (s.fresh) { s.fresh = false; keep.push(s); continue; } // leaves the barrel on the next tick
+      [s.x,s.y] = wrap(s.x+s.dx, s.y+s.dy);
       const c = board[s.y][s.x];
       if (c==='#'){ board[s.y][s.x]='%'; score[s.p-1]+=1; continue; }
       if (c==='%'){ board[s.y][s.x]=' '; score[s.p-1]+=2; continue; }
@@ -329,10 +329,12 @@ SCORE P1=11 P2=3
   render();
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!reduce){
+    let hold = 0;
     setInterval(() => {
+      if (hold > 0) { if (--hold === 0) { reset(); render(); } return; }
       step();
       const alive = [1,2].map(p => tanks.some(t => t.p===p && t.alive));
-      if (!alive[0] || !alive[1] || tick > 1400 || tanks.every(t => !t.cannon)) { reset(); }
+      if (!alive[0] || !alive[1] || tick > 1400 || tanks.every(t => !t.cannon)) hold = 18; // show the final frame, then a new round
       render();
     }, 110);
   }
