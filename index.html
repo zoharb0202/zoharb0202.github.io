@@ -111,8 +111,17 @@ section{padding-block:72px;border-top:1px solid var(--line)}
 .contact li a:hover{border-color:var(--accent)}
 footer{padding-block:28px 40px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
+.phone-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0;width:100%}
+.phone{--w:390px;--h:844px;--k:1;width:calc(var(--w) * var(--k) + 24px);height:calc(var(--h) * var(--k) + 24px);max-width:100%;padding:12px;box-sizing:border-box;border-radius:calc(54px * var(--k) + 10px);background:#0E1114;box-shadow:0 0 0 1px #2A3038 inset,0 30px 60px -30px rgba(0,0,0,.55),0 12px 24px -12px rgba(0,0,0,.35);position:relative}
+.phone::before{content:"";position:absolute;top:calc(12px + 11px * var(--k));left:50%;transform:translateX(-50%);width:calc(110px * var(--k));height:calc(30px * var(--k));border-radius:20px;background:#0E1114;z-index:2}
+.phone-screen{width:100%;height:100%;border-radius:calc(44px * var(--k));overflow:hidden;background:#F6F7FB;position:relative}
+.phone-screen iframe{position:absolute;top:calc(40px * var(--k));left:0;width:var(--w);height:calc(var(--h) - 40px);border:0;transform:scale(var(--k));transform-origin:0 0;background:#F6F7FB}
+.phone-status{position:absolute;top:0;left:0;right:0;height:calc(40px * var(--k));display:flex;align-items:center;justify-content:space-between;padding:0 calc(28px * var(--k));font:600 calc(13px * var(--k))/1 "Onest",system-ui,sans-serif;color:#12161B}
+.phone-caption{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;color:var(--muted);max-width:40ch;text-align:left}
+.phone-caption b{font-weight:600;color:var(--ink)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#2F9E44;margin-top:.55em;flex:none;box-shadow:0 0 0 3px rgba(47,158,68,.18)}
 @media (max-width:860px){
-  .hero,.project,.contact{grid-template-columns:1fr}
+  .hero,.project,.contact{grid-template-columns:minmax(0,1fr)}
   .hero{padding-block:40px 56px;gap:32px}
   .skills{grid-template-columns:1fr}
   .project .demo{order:2}
@@ -165,25 +174,20 @@ footer{padding-block:28px 40px;color:var(--muted);font-size:.85rem;border-top:1p
         <li>Cloud Functions handle payments, disputes, push notifications, image moderation and pricing signals.</li>
       </ul>
       <div class="stack"><span>Dart</span><span>Flutter</span><span>Riverpod</span><span>Firestore</span><span>Cloud Functions</span><span>Stripe</span><span>LLM APIs</span></div>
-      <div class="links"><a class="btn" href="https://github.com/zoharb0202/secondhand-marketplace">View the code</a></div>
+      <div class="links"><a class="btn primary" href="https://secondhand-marketplace-fe82d.web.app/" target="_blank" rel="noopener">Try the live demo</a> <a class="btn" href="https://github.com/zoharb0202/secondhand-marketplace">View the code</a></div>
     </div>
-    <div class="demo screen">
-      <div class="screen-head"><span class="dots"><i></i><i></i><i></i></span><span>aiProductSearch · search intent</span></div>
-      <pre class="arena mono" style="font-size:clamp(9px,1.25vw,13px)"><span class="b">$ query</span>
-<bdi dir="rtl">אייפון 13 במצב טוב עד 2000 ש״ח בתל אביב</bdi>
-
-<span class="b">&lt;- intent (schema-validated)</span>
-{
-  keywords:    ["<bdi>אייפון</bdi>", "13"],
-  category:    "electronics",
-  subcategory: "smartphones",
-  brand:       "Apple",
-  model:       "iPhone 13",
-  maxPrice:    2000,
-  condition:   "good",
-  city:        "<bdi>תל אביב</bdi>"
-}</pre>
-      <p class="rule" style="margin-top:10px;text-align:left">Illustrative example of the search-intent shape. The model's output is checked against a strict schema before any Firestore query runs.</p>
+    <div class="demo phone-wrap">
+      <div class="phone" id="phone">
+        <div class="phone-screen" id="phoneScreen">
+          <div class="phone-status" aria-hidden="true"><span>9:41</span><svg width="46" height="12" viewBox="0 0 46 12" style="width:calc(46px * var(--k));height:auto"><rect x="0" y="7" width="3" height="5" rx="1" fill="#12161B"/><rect x="5" y="5" width="3" height="7" rx="1" fill="#12161B"/><rect x="10" y="2.5" width="3" height="9.5" rx="1" fill="#12161B"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#12161B"/><rect x="23.5" y="0.5" width="19" height="11" rx="3" fill="none" stroke="#12161B" opacity=".45"/><rect x="25.5" y="2.5" width="13" height="7" rx="1.5" fill="#12161B"/><rect x="43.5" y="4" width="1.8" height="4" rx=".9" fill="#12161B" opacity=".45"/></svg></div>
+          <iframe id="phoneFrame" title="Secondhand Marketplace live demo" src="https://secondhand-marketplace-fe82d.web.app/" loading="lazy" allow="clipboard-write; geolocation"></iframe>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span>Live demo: the real app, running on Firebase. Tap <b>כניסה כאורח</b> to look around.</span>
+      </div>
+      <a class="btn" href="https://secondhand-marketplace-fe82d.web.app/" target="_blank" rel="noopener">Open full screen</a>
     </div>
   </article>
 
@@ -264,6 +268,14 @@ SCORE P1=50 P2=13
 <footer><span>© 2026 Zohar Buzaglo</span><span>Hosted on GitHub Pages</span></footer>
 </div>
 
+<script>
+(function(){
+  const phone=document.getElementById('phone'); if(!phone) return;
+  const wrap=phone.parentElement;
+  function fit(){ const avail=Math.min(wrap.clientWidth, 440); const k=Math.min(1,(avail-24)/390); phone.style.setProperty('--k', k.toFixed(4)); }
+  fit(); new ResizeObserver(fit).observe(wrap);
+})();
+</script>
 <script>
 /* ---------- Tanks arena: a small CPU-vs-CPU simulation in the spirit of the real game ---------- */
 (function(){
