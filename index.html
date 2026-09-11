@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zohar Buzaglo</title>
-<meta name="description" content="Zohar Buzaglo, software developer. Games and the systems under them, in C++, C# and Java.">
+<meta name="description" content="Zohar Buzaglo, software developer. Mobile apps, games and the systems under them, in Flutter, C++, C# and Java.">
 <meta property="og:title" content="Zohar Buzaglo">
-<meta property="og:description" content="Games and the systems under them, in C++, C# and Java.">
+<meta property="og:description" content="Mobile apps, games and the systems under them, in Flutter, C++, C# and Java.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23D9480F'/><text x='16' y='23' font-family='monospace' font-size='20' font-weight='700' text-anchor='middle' fill='white'>Z</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -134,7 +134,7 @@ footer{padding-block:28px 40px;color:var(--muted);font-size:.85rem;border-top:1p
   <div>
     <p class="label" id="headline">Software developer · CS student</p>
     <h1 style="margin-top:14px">Zohar<span>Buzaglo</span></h1>
-    <p class="lede">I build games and the systems under them: simulations, AI opponents, and the tests that keep them honest.</p>
+    <p class="lede">I build apps and games, and the systems under them: backends, AI features, simulations, and the tests that keep them honest.</p>
     <p class="meta" id="edu">B.Sc. Computer Science at the Academic College of Tel Aviv-Yaffo (MTA), graduating 2027. Looking for a software developer position.</p>
     <div class="links">
       <a class="btn primary" href="#projects">See the projects</a>
@@ -151,6 +151,41 @@ footer{padding-block:28px 40px;color:var(--muted);font-size:.85rem;border-top:1p
 
 <section id="projects">
   <div class="sec-head"><h2>Projects</h2><p class="label">Code, write-ups and runnable builds on GitHub</p></div>
+
+  <article class="project">
+    <div>
+      <p class="label">Flutter · Firebase · Node.js</p>
+      <h3 style="margin-top:10px">Secondhand Marketplace</h3>
+      <p class="tag">A Hebrew-first mobile marketplace for buying and selling used items locally.</p>
+      <p class="desc">Sellers list items and buyers find them through AI search, a photo search and a personalized feed, then order in the app and pick up from the seller. Chat, reviews, storefronts, stories and alerts sit on the same Firebase backend.</p>
+      <ul class="points">
+        <li>AI search: a plain-Hebrew query becomes validated, structured filters (category, brand, model, price range, condition, city).</li>
+        <li>The feed blends a per-user taste profile with distance, trending scores and a discovery slot, all covered by unit tests.</li>
+        <li>Orders move through a server-enforced state machine. Firestore rules allow only legal transitions, and prices are re-checked on the server before a card is charged.</li>
+        <li>Cloud Functions handle payments, disputes, push notifications, image moderation and pricing signals.</li>
+      </ul>
+      <div class="stack"><span>Dart</span><span>Flutter</span><span>Riverpod</span><span>Firestore</span><span>Cloud Functions</span><span>Stripe</span><span>LLM APIs</span></div>
+      <div class="links"><a class="btn" href="https://github.com/zoharb0202/secondhand-marketplace">View the code</a></div>
+    </div>
+    <div class="demo screen">
+      <div class="screen-head"><span class="dots"><i></i><i></i><i></i></span><span>aiProductSearch · search intent</span></div>
+      <pre class="arena mono" style="font-size:clamp(9px,1.25vw,13px)"><span class="b">$ query</span>
+<bdi dir="rtl">אייפון 13 במצב טוב עד 2000 ש״ח בתל אביב</bdi>
+
+<span class="b">&lt;- intent (schema-validated)</span>
+{
+  keywords:    ["<bdi>אייפון</bdi>", "13"],
+  category:    "electronics",
+  subcategory: "smartphones",
+  brand:       "Apple",
+  model:       "iPhone 13",
+  maxPrice:    2000,
+  condition:   "good",
+  city:        "<bdi>תל אביב</bdi>"
+}</pre>
+      <p class="rule" style="margin-top:10px;text-align:left">Illustrative example of the search-intent shape. The model's output is checked against a strict schema before any Firestore query runs.</p>
+    </div>
+  </article>
 
   <article class="project">
     <div>
@@ -214,9 +249,9 @@ SCORE P1=50 P2=13
 <section id="skills">
   <div class="sec-head"><h2>Toolbox</h2></div>
   <div class="skills">
-    <div><h3>Languages</h3><p>C++17, C#, Java. Comfortable moving between them, and with the OOP, generics and STL/collections work each project needed.</p></div>
-    <div><h3>Engineering</h3><p>Separating logic from UI, event-driven design, deterministic simulation, unit testing (xUnit) and CI with GitHub Actions.</p></div>
-    <div><h3>Also</h3><p>Git and GitHub, Visual Studio, the .NET CLI, and Windows desktop and console development.</p></div>
+    <div><h3>Languages</h3><p>C++17, C#, Java, Dart and JavaScript (Node.js). Comfortable moving between them, and with the OOP, generics and collections work each project needed.</p></div>
+    <div><h3>Engineering</h3><p>Separating logic from UI, event-driven design, state machines, deterministic simulation, unit testing (xUnit, flutter_test, node:test) and CI with GitHub Actions.</p></div>
+    <div><h3>Also</h3><p>Flutter and Riverpod, Firebase (Firestore, security rules, Cloud Functions, FCM), Stripe, LLM APIs, Git and GitHub, Visual Studio and the .NET CLI.</p></div>
   </div>
 </section>
 
